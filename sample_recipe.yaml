@@ -1,18 +1,3 @@
-# culture_takehome
-
-```bash
-# a virtualenv is preferred instead of polluting the root installation
-# if you don't want to deal you can skip the next three lines
-$ pip3 install --user virtualenv # Only needs to be done once
-$ virtualenv venv
-$ source ./venv/bin/activate
-
-# install the requirements
-$ pip3 install -r requirements.txt
-```
-
-# Recipe Format
-```yaml
 # Can be used to kill time between recipe steps
 - type: pause
 
@@ -28,4 +13,3 @@ $ pip3 install -r requirements.txt
 - type: timed
   rate: 30 # steps/min
   time: 30 # minutes
-```
