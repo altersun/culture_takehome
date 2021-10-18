@@ -15,6 +15,7 @@ $ pip3 install -r requirements.txt
 ```yaml
 # Can be used to kill time between recipe steps
 - type: pause
+  time: 30 # minutes
 
 # Add a fixed mass of glucose
 - type: bolus
