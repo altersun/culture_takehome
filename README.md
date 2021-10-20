@@ -1,4 +1,8 @@
 # culture_takehome
+Homework for interviewing at Culture Biosciences
+
+## How to install
+Develped on Python 3.8 so use an earlier version at your own risk!
 
 ```bash
 # a virtualenv is preferred instead of polluting the root installation
@@ -11,22 +15,26 @@ $ source ./venv/bin/activate
 $ pip3 install -r requirements.txt
 ```
 
-# Recipe Format
+## How to Run
+TBD
+
+## Recipe Format
+In yaml:
 ```yaml
 # Can be used to kill time between recipe steps
-- type: pause
-  time: 30 # minutes
+- pause: 
+    time: 30 # minutes
 
 # Add a fixed mass of glucose
-- type: bolus
-  target_mass: 30 # grams
+- bolus:
+    target_mass: 30 # grams
 
 # Add an arbitrary mass of glucose at an increasing/decreasing rate until target is hit
-- type: linear
-  target_rate: 30 # steps/min
+- linear:
+    target_rate: 30 # steps/min
 
 # Feed in glucose at a given volumetric rate for a given time
-- type: timed
-  rate: 30 # steps/min
-  time: 30 # minutes
+- timed:
+    rate: 30 # steps/min
+    time: 30 # minutes
 ```

@@ -2,6 +2,7 @@
 
 import argparse
 import asyncio
+import enum
 import logging
 import os
 import schema
@@ -10,6 +11,15 @@ import time
 import yaml
 
 import reactor_controller
+import reactor_io
+
+
+class RecipeState(enum.Enum):
+    BOLUS = 'bolus'
+    LINEAR = 'linear'
+    TIMED = 'timed'
+    PAUSE = 'pause'
+
 
 
 class RecipeError(Exception):
@@ -23,17 +33,17 @@ def parse_recipe(filename: str) -> list:
     """
     recipe_scheme = schema.Schema([
         schema.Or(
-            {'bolus': {'target_mass': int}}, 
-            {'linear': {'target_rate': int}},
-            {'timed': {'rate': int, 'time': int}},
-            {'pause': {'time': int}},
+            {RecipeState.BOLUS: {'target_mass': int}}, 
+            {RecipeState.LINEAR: {'target_rate': int}},
+            {RecipeState.TIMED: {'rate': int, 'time': int}},
+            {RecipeState.PAUSE: {'time': int}},
         )
     ])
 
     with open(filename, 'r') as recipe_file:
-        recipe_dict = yaml.safe_load(recipe_file)
-    recipe_scheme.validate(recipe_dict)
-    return recipe_dict
+        recipe_list = yaml.safe_load(recipe_file)
+    recipe_scheme.validate(recipe_list)
+    return recipe_list
 
 
         
@@ -65,16 +75,44 @@ if __name__ == '__main__':
 
     
     loop = asyncio.get_event_loop()
+
+    previous_values = {
+        'feed_scale': reactor_io.get_sensor_value(reactor_io.Sensor.FEED_SCALE_G)
+        'steps': reactor_io.get_sensor_value(reactor_io.Sensor.FEED_PUMP_STEPS)
+    }
+
+
+
+    # TODO: Consider using asyncio event loop for this to avoid clock drift cost of calculations
+    for 
+        current_values = {
+            'feed_scale': reactor_io.get_sensor_value(reactor_io.Sensor.FEED_SCALE_G)
+            'steps': reactor_io.get_sensor_value(reactor_io.Sensor.FEED_PUMP_STEPS)
+        }
+        grams_per_step = (previous_scale['feed_scale']-current_values['feed_scale']) /\
+            (current_values['steps']-previous_scale['steps'])
+        if grams_per_step == 0:
+            grams_per_step = reactor_io.AVG_GRAMPS_PER_STEP
+        
+        recipe_step = recipe[0]
+        recipe_type = list(recipe[0].keys)[0] # Maybe I should rethink the schema...
+        if recipe[0].k == RecipeState.BOLUS:
+            controller.set_feed_scale = current_values['feed_scale'] - recipe[0]['target_mass']
+        elif recipe[0]
+
     
-    splart = [10,]
-    def desplarter():
-        next = loop.time() + 1.0
-        loop.call_later(1, desplarter)
-        print(f'{splart[0]}, {next-1.0}')
-        splart[0] -= 1
-        if splart[0] == 0:
-            loop.stop()
+    #splart = [10,]
+    #def desplarter():
+    #    next = loop.time() + 1.0
+    #    loop.call_later(1, desplarter)
+    #    print(f'{splart[0]}, {next-1.0}')
+    #    splart[0] -= 1
+    #    if splart[0] == 0:
+    #        loop.stop()
     
+
+
+
     desplarter()
     loop.run_forever()
     print('Done!')
